@@ -7,6 +7,7 @@ M.start_spinner = function(row)
 	local timer = vim.uv.new_timer()
 	local mark_id = nil
 	local stopped = false
+	local buf = vim.api.nvim_get_current_buf()
 
 	timer:start(
 		0,
@@ -15,7 +16,7 @@ M.start_spinner = function(row)
 			if stopped then
 				return
 			end
-			mark_id = vim.api.nvim_buf_set_extmark(0, ns, row, 0, {
+			mark_id = vim.api.nvim_buf_set_extmark(buf, ns, row, 0, {
 				id = mark_id,
 				virt_text = { { frames[i] .. " processing", "Comment" } },
 				virt_text_pos = "eol",
@@ -30,7 +31,7 @@ M.start_spinner = function(row)
 		timer:close()
 		vim.schedule(function()
 			if mark_id then
-				vim.api.nvim_buf_del_extmark(0, ns, mark_id)
+				vim.api.nvim_buf_del_extmark(buf, ns, mark_id)
 			end
 		end)
 	end

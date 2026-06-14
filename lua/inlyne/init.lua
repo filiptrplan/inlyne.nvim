@@ -11,7 +11,7 @@ end
 
 M.register_commands = function()
 	vim.api.nvim_create_user_command("InlynePrompt", function(opts)
-		local row = vim.api.nvim_win_get_cursor(0)[1] - 1
+		local row = vim.api.nvim_win_get_cursor(0)[1]
 		if opts.range > 0 then
 			row = opts.line2
 		end
