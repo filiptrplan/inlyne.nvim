@@ -17,6 +17,7 @@ Call the [pi](https://github.com/earendil-works/pi-coding-agent) CLI agent inlin
 
 - `:InlynePrompt` — opens a floating prompt, sends your input to pi
 - `:InlyneCall <message>` — sends a message directly (no prompt UI)
+- `:InlyneKill` -- Kills all running instances of Pi.
 
 Both commands also accept a range and that is communicated to Pi.
 

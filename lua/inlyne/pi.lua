@@ -2,6 +2,8 @@ local M = {}
 
 local ui = require("inlyne.ui")
 
+local pids = {}
+
 local SYSTEM_PROMPT = [[
 You are being called in INLINE mode straight from the user's IDE. Your mission is to complete the user's request as fast as possible, prioritizing simplicity and low-cost edits above verification and engineering. 
 
@@ -19,6 +21,12 @@ M.call_with_range = function(start_line, end_line, user_message, model)
 	M.call(user_message, model)
 end
 
+M.kill_all = function()
+	for _, v in ipairs(pids) do
+		vim.uv.kill(v, 9)
+	end
+end
+
 M.call = function(user_message, model)
 	local current_file = vim.api.nvim_buf_get_name(0)
 	local message = string.format(
@@ -33,15 +41,22 @@ User prompt: %s
 
 	local row = vim.api.nvim_win_get_cursor(0)[1] - 1
 	local stop_spinner = ui.start_spinner(row)
-	local handle, pid = vim.uv.spawn("pi", {
+	local _, pid = vim.uv.spawn("pi", {
 		args = { "--model", model, "--no-extensions", "--no-skills", "--append-system-prompt", SYSTEM_PROMPT, message },
 		stdio = { nil, nil, nil },
 	}, function(code, signal)
 		vim.schedule(function()
 			vim.cmd("edit!")
 			stop_spinner()
+			for i, v in ipairs(pids) do
+				if v == pid then
+					table.remove(pids, i)
+					break
+				end
+			end
 		end)
 	end)
+	table.insert(pids, pid)
 end
 
 return M

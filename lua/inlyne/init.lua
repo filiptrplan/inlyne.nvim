@@ -35,6 +35,10 @@ M.register_commands = function()
 		desc = "Calls the Pi agent inline",
 		range = true,
 	})
+
+	vim.api.nvim_create_user_command("InlyneKill", function()
+		rpc.kill_all()
+	end, { nargs = 0, desc = "Kills all running instances of Pi spawned by this extension." })
 end
 
 return M
