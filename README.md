@@ -2,6 +2,10 @@
 
 Call the [pi](https://github.com/earendil-works/pi-coding-agent) CLI agent inline from Neovim.
 
+## Why another plugin?
+
+All of the other plugins add too much functionality. This plugin seeks to accomplish only one thing: triggering multiple short code edits at a time, quickly. No asking questions, no fancy extensions. We use Pi exactly because it is a minimal agent coding harness and we disable all extensions and skills when we call it. 
+
 ## Requirements
 
 - [pi](https://github.com/earendil-works/pi-coding-agent) installed and on `$PATH`
