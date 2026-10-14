@@ -1,7 +1,10 @@
 local M = {}
 
 M.defaults = {
-	model = "opencode-go/deepseek-v4-flash",
+	-- "pi" or "claude" (Claude Code)
+	backend = "pi",
+	-- nil uses the backend default ("opencode-go/deepseek-v4-flash" for pi, "haiku" for claude)
+	model = nil,
 }
 
 M.options = {}

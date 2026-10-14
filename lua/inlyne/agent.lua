@@ -2,6 +2,8 @@ local M = {}
 
 local ui = require("inlyne.ui")
 
+local config = require("inlyne.config")
+
 local pids = {}
 
 local SYSTEM_PROMPT = [[
@@ -14,11 +16,40 @@ Rules:
 - No need to add any caveats, next steps or questions as the user does not see that either.
 ]]
 
-M.call_with_range = function(start_line, end_line, user_message, model)
+local backends = {
+	pi = {
+		cmd = "pi",
+		default_model = "opencode-go/deepseek-v4-flash",
+		args = function(model, message)
+			return { "--model", model, "--no-extensions", "--no-skills", "--append-system-prompt", SYSTEM_PROMPT, message }
+		end,
+	},
+	claude = {
+		cmd = "claude",
+		default_model = "haiku",
+		args = function(model, message)
+			return {
+				"-p",
+				"--model",
+				model,
+				"--append-system-prompt",
+				SYSTEM_PROMPT,
+				"--permission-mode",
+				"acceptEdits",
+				"--allowedTools",
+				"Read,Edit,Write,Grep,Glob",
+				"--disable-slash-commands",
+				message,
+			}
+		end,
+	},
+}
+
+M.call_with_range = function(start_line, end_line, user_message)
 	local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
 	local text = table.concat(lines, "\n")
 	user_message = user_message .. string.format("\n\nUser selected lines %d - %d: \n%s", start_line, end_line, text)
-	M.call(user_message, model)
+	M.call(user_message)
 end
 
 M.kill_all = function()
@@ -27,7 +58,13 @@ M.kill_all = function()
 	end
 end
 
-M.call = function(user_message, model)
+M.call = function(user_message)
+	local backend = backends[config.options.backend]
+	if not backend then
+		vim.notify("inlyne: unknown backend '" .. tostring(config.options.backend) .. "'", vim.log.levels.ERROR)
+		return
+	end
+	local model = config.options.model or backend.default_model
 	local current_file = vim.api.nvim_buf_get_name(0)
 	local message = string.format(
 		[[
@@ -41,8 +78,8 @@ User prompt: %s
 
 	local row = vim.api.nvim_win_get_cursor(0)[1] - 1
 	local stop_spinner = ui.start_spinner(row)
-	local _, pid = vim.uv.spawn("pi", {
-		args = { "--model", model, "--no-extensions", "--no-skills", "--append-system-prompt", SYSTEM_PROMPT, message },
+	local _, pid = vim.uv.spawn(backend.cmd, {
+		args = backend.args(model, message),
 		stdio = { nil, nil, nil },
 	}, function(code, signal)
 		vim.schedule(function()

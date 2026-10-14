@@ -1,6 +1,6 @@
 local M = {}
 
-local rpc = require("inlyne.pi")
+local rpc = require("inlyne.agent")
 local config = require("inlyne.config")
 local ui = require("inlyne.ui")
 
@@ -17,28 +17,28 @@ M.register_commands = function()
 		end
 		ui.inline_prompt(row, function(prompt)
 			if opts.range > 0 then
-				rpc.call_with_range(opts.line1, opts.line2, prompt, config.options.model)
+				rpc.call_with_range(opts.line1, opts.line2, prompt)
 			else
-				rpc.call(prompt, config.options.model)
+				rpc.call(prompt)
 			end
 		end)
 	end, { nargs = 0, desc = "Triggers inline prompt and then calls agent with user input", range = true })
 
 	vim.api.nvim_create_user_command("InlyneCall", function(opts)
 		if opts.range > 0 then
-			rpc.call_with_range(opts.line1, opts.line2, opts.fargs[1], config.options.model)
+			rpc.call_with_range(opts.line1, opts.line2, opts.fargs[1])
 		else
-			rpc.call(opts.fargs[1], config.options.model)
+			rpc.call(opts.fargs[1])
 		end
 	end, {
 		nargs = 1,
-		desc = "Calls the Pi agent inline",
+		desc = "Calls the agent inline",
 		range = true,
 	})
 
 	vim.api.nvim_create_user_command("InlyneKill", function()
 		rpc.kill_all()
-	end, { nargs = 0, desc = "Kills all running instances of Pi spawned by this extension." })
+	end, { nargs = 0, desc = "Kills all running instances of the agent spawned by this extension." })
 end
 
 return M

@@ -8,7 +8,8 @@ All of the other plugins add too much functionality. This plugin seeks to accomp
 
 ## Requirements
 
-- [pi](https://github.com/earendil-works/pi-coding-agent) installed and on `$PATH`
+- [pi](https://github.com/earendil-works/pi-coding-agent) installed and on `$PATH` (default backend), or
+- [Claude Code](https://claude.com/claude-code) installed and on `$PATH` (`backend = "claude"`)
 
 ## Install
 
@@ -28,11 +29,17 @@ Both commands also accept a range and that is communicated to Pi.
 ## Config
 
 ```lua
--- lazy.nvim with custom model
-{ "filiptrplan/inlyne.nvim", opts = { model = "opencode-go/deepseek-v4-flash" } }
+-- lazy.nvim using Claude Code with Haiku
+{ "filiptrplan/inlyne.nvim", opts = { backend = "claude" } }
+
+-- custom model
+{ "filiptrplan/inlyne.nvim", opts = { backend = "pi", model = "opencode-go/deepseek-v4-flash" } }
 ```
 
-Default model: `opencode-go/deepseek-v4-flash`.
+- `backend`: `"pi"` (default) or `"claude"`.
+- `model`: defaults to `opencode-go/deepseek-v4-flash` for pi and `haiku` for claude.
+
+The claude backend runs `claude -p` with `acceptEdits` and only the `Read,Edit,Write,Grep,Glob` tools allowed.
 
 ## License
 
