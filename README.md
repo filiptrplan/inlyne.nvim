@@ -20,7 +20,7 @@ All of the other plugins add too much functionality. This plugin seeks to accomp
 
 ## Usage
 
-- `:InlynePrompt` — opens a floating prompt, sends your input to pi
+- `:InlynePrompt` — opens a multi-line floating prompt buffer. Write freely (`<CR>` in insert mode adds a newline), then submit with `<C-s>` (insert/normal) or `<CR>` (normal). Cancel with `<Esc>`/`q` in normal mode.
 - `:InlyneCall <message>` — sends a message directly (no prompt UI)
 - `:InlyneKill` -- Kills all running instances of Pi.
 
